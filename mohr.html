@@ -2,108 +2,156 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>모어법 계산기</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>모어법 염화이온 계산기</title>
   <style>
+    :root {
+      --bg: #ffffff;
+      --text: #212529;
+      --card-bg: #f8f9fa;
+      --primary: #339af0;
+      --input-border: #ced4da;
+      --result-bg: #e9f5ff;
+      --result-text: #1c7ed6;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #e9ecef;
+        --card-bg: #1e1e1e;
+        --primary: #4dabf7;
+        --input-border: #495057;
+        --result-bg: #2a2a2a;
+        --result-text: #74c0fc;
+      }
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
       margin: 0;
-      padding: 20px;
     }
-    .container {
-      max-width: 420px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h2 {
+
+    h1 {
       text-align: center;
-      color: #222;
+      margin-bottom: 20px;
     }
+
+    .calculator {
+      max-width: 420px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 25px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
     label {
-      margin-top: 15px;
+      font-size: 1rem;
       display: block;
-      font-weight: bold;
+      margin: 12px 0 6px;
     }
-    input {
+
+    input[type="number"] {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      font-size: 16px;
-      border: 1px solid #ccc;
+      font-size: 1rem;
+      border: 1px solid var(--input-border);
       border-radius: 6px;
+      background-color: #fff;
+      color: #000;
+      box-sizing: border-box;
     }
+
+    @media (prefers-color-scheme: dark) {
+      input[type="number"] {
+        background-color: #333;
+        color: #f1f3f5;
+      }
+    }
+
     button {
-      margin-top: 20px;
       width: 100%;
+      margin-top: 20px;
       padding: 12px;
-      background-color: #3b82f6;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: var(--primary);
       color: white;
       border: none;
       border-radius: 8px;
-      font-size: 16px;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
+
     button:hover {
-      background-color: #2563eb;
+      background: #228be6;
     }
-    #result {
+
+    .result {
       margin-top: 20px;
+      padding: 15px;
+      background: var(--result-bg);
+      color: var(--result-text);
+      border: 1px solid var(--result-text);
+      border-radius: 6px;
+      font-size: 1.1rem;
       text-align: center;
-      font-size: 18px;
-      color: #1e3a8a;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .calculator {
+        padding: 20px 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>모어법 계산기 (Cl⁻ %)</h2>
 
+  <h1>모어법 계산기</h1>
+  <div class="calculator">
     <label for="C">질산은 농도 (mol/L)</label>
-    <input type="number" id="C" value="0.1" step="0.001" inputmode="decimal" />
+    <input type="number" id="C" value="0.1" step="0.001" required />
 
-    <label for="V">사용 부피 (mL)</label>
-    <input type="number" id="V" value="15.0" step="0.01" inputmode="decimal" />
+    <label for="V">질산은 부피 (mL)</label>
+    <input type="number" id="V" value="15.0" step="0.01" required />
 
     <label for="W">시료 질량 (g)</label>
-    <input type="number" id="W" value="0.5" step="0.001" inputmode="decimal" />
+    <input type="number" id="W" value="0.5" step="0.001" required />
 
-    <button id="calculate">염화이온 % 계산</button>
-    <div id="result">결과가 여기에 표시됩니다.</div>
+    <button onclick="calculate()">계산하기</button>
+
+    <div class="result" id="result">결과가 여기에 표시됩니다.</div>
   </div>
 
   <script>
-    // DOM 완전히 로드된 후 이벤트 연결
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("calculate");
-      const result = document.getElementById("result");
+    function calculate() {
+      const C = parseFloat(document.getElementById("C").value);
+      const V = parseFloat(document.getElementById("V").value);
+      const W = parseFloat(document.getElementById("W").value);
+      const resultDiv = document.getElementById("result");
 
-      btn.addEventListener("click", () => {
-        // 입력 값 파싱
-        const C = parseFloat(document.getElementById("C").value);
-        const V = parseFloat(document.getElementById("V").value);
-        const W = parseFloat(document.getElementById("W").value);
+      if (isNaN(C) || isNaN(V) || isNaN(W) || W <= 0 || C <= 0 || V <= 0) {
+        resultDiv.textContent = "모든 값을 정확히 입력하세요.";
+        resultDiv.style.color = "red";
+        return;
+      }
 
-        // 입력 값 검증
-        if (isNaN(C) || isNaN(V) || isNaN(W) || W === 0) {
-          result.textContent = "❌ 모든 값을 올바르게 입력하세요. (시료 질량은 0보다 커야 함)";
-          result.style.color = "red";
-          return;
-        }
+      const molAgNO3 = (C * V) / 1000;
+      const massCl = molAgNO3 * 35.45;
+      const percentCl = (massCl / W) * 100;
 
-        // 계산 공식
-        const mol = (C * V) / 1000;      // 몰 수 = 농도 * 부피(리터 단위)
-        const mass = mol * 35.45;        // 질량(g) = 몰수 * 염소 원자량
-        const percent = (mass / W) * 100; // 백분율 계산
-
-        // 결과 출력
-        result.textContent = `염화이온 함량: ${percent.toFixed(2)} %`;
-        result.style.color = "#1e3a8a";
-      });
-    });
+      resultDiv.textContent = `염화이온 함량: ${percentCl.toFixed(2)} %`;
+      resultDiv.style.color = "var(--result-text)";
+    }
   </script>
+
 </body>
 </html>
