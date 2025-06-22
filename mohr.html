@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>모어법 계산기</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 420px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    label {
+      margin-top: 15px;
+      display: block;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    #result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #1e3a8a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>모어법 계산기 (Cl⁻ %)</h2>
+
+    <label for="C">질산은 농도 (mol/L)</label>
+    <input type="number" id="C" value="0.1" step="0.001" inputmode="decimal" />
+
+    <label for="V">사용 부피 (mL)</label>
+    <input type="number" id="V" value="15.0" step="0.01" inputmode="decimal" />
+
+    <label for="W">시료 질량 (g)</label>
+    <input type="number" id="W" value="0.5" step="0.001" inputmode="decimal" />
+
+    <button id="calculate">염화이온 % 계산</button>
+    <div id="result">결과가 여기에 표시됩니다.</div>
+  </div>
+
+  <script>
+    // DOM 완전히 로드된 후 이벤트 연결
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("calculate");
+      const result = document.getElementById("result");
+
+      btn.addEventListener("click", () => {
+        // 입력 값 파싱
+        const C = parseFloat(document.getElementById("C").value);
+        const V = parseFloat(document.getElementById("V").value);
+        const W = parseFloat(document.getElementById("W").value);
+
+        // 입력 값 검증
+        if (isNaN(C) || isNaN(V) || isNaN(W) || W === 0) {
+          result.textContent = "❌ 모든 값을 올바르게 입력하세요. (시료 질량은 0보다 커야 함)";
+          result.style.color = "red";
+          return;
+        }
+
+        // 계산 공식
+        const mol = (C * V) / 1000;      // 몰 수 = 농도 * 부피(리터 단위)
+        const mass = mol * 35.45;        // 질량(g) = 몰수 * 염소 원자량
+        const percent = (mass / W) * 100; // 백분율 계산
+
+        // 결과 출력
+        result.textContent = `염화이온 함량: ${percent.toFixed(2)} %`;
+        result.style.color = "#1e3a8a";
+      });
+    });
+  </script>
+</body>
+</html>
